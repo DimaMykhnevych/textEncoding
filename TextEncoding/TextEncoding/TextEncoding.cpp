@@ -69,7 +69,7 @@ void PrintUnicodeArray(wchar_t str[][name_length], size_t size)
 
 	for (unsigned int i = 0; i < size; i++)
 	{
-		//MessageBoxW(0, str[i], title, MB_OK);
+		MessageBoxW(0, str[i], title, MB_OK);
 	}
 	printf("\n\n");
 }
@@ -128,17 +128,41 @@ void reverse_unicode_file() {
 		all_text.push_back(str);
 	}
 	read_file.close();
+
+	vector<wstring> reversed_text;
+	for (wstring txt : all_text) {
+		wstring reversed_str = L"";
+		for (int i = txt.size() - 2; i >= 0; i -= 2) {
+			reversed_str += txt[i];
+			reversed_str += txt[i + 1];
+		}
+		reversed_text.push_back(reversed_str);
+	}
+
 	wofstream write_file(PATH);
 	write_file << first_two_bytes;
 	for (size_t i = 0; i < all_text.size(); i++) {
-		reverse(all_text[i].begin(), all_text[i].end());
-		write_file << all_text[i];
+		write_file << reversed_text[i];
 	}
 	write_file.close();
 }
 
 void reverse_ascii_file() {
+	ifstream read_file(PATH);
+	string str;
+	vector<string> all_text;
 
+	while (getline(read_file, str)) {
+		all_text.push_back(str);
+	}
+	read_file.close();
+
+	ofstream write_file(PATH);
+	for (size_t i = 0; i < all_text.size(); i++) {
+		reverse(all_text[i].begin(), all_text[i].end());
+		write_file << all_text[i];
+	}
+	write_file.close();
 }
 
 bool is_unicode_file() {
@@ -224,6 +248,6 @@ int main()
 		reverse_unicode_file();
 	}
 	else {
-		printf("false");
+		reverse_ascii_file();
 	}
 }
